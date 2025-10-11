@@ -25,7 +25,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
+          npm --legacy-peer-deps install
           npm run build --if-present
           npm run test --if-present
 
@@ -52,4 +52,5 @@ jobs:
           app-name: 'Kroeva'
           slot-name: 'Production'
           package: .
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_524256760FD84E66ADFEAC2C1D90E964 }}
