@@ -49,7 +49,7 @@ Join our community of developers creating universal apps.
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
-## Accessing Azure and Web Application Settings
+## Accessing Azure, Web Application Settings and Getting Web Application Online
 
 1. After a new web app is created, wait for all deployments to be completed.
    <img width="1919" height="913" alt="Screenshot 2025-10-13 115043" src="https://github.com/user-attachments/assets/afa86586-7258-41a8-a5fd-3ea6441d2b93" />
@@ -59,3 +59,5 @@ Join our community of developers creating universal apps.
 
    2.1 Should lead to this page.
    <img width="1919" height="913" alt="image" src="https://github.com/user-attachments/assets/0c0fe1bd-90b8-4d60-a7d7-189e10cef654" />
+
+3. [Click here](https://stackoverflow.com/a/77271013) to follow the steps on stack overflow in deploying the web application continuously with Azure and Github Actions (workflow). 
