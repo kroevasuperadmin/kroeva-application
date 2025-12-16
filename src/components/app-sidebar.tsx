@@ -4,12 +4,10 @@ import * as React from "react"
 import {
   IconCamera,
   IconChartBar,
-  IconDashboard,
   IconDatabase,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
@@ -35,116 +33,63 @@ import {
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "kroeva",
+    email: "kroeva@example.com",
+    avatar: "/avatars/kroeva.jpg",
   },
   navMain: [
     {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
+      title: "Insights",
+      url: "/insights",  // Changed from "#"
       icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
+      title: "Applications",
+      url: "/applications",  // Changed from "#"
+      icon: IconListDetails,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Licences",
+      url: "/licences",  // Changed from "#"
+      icon: IconReport,
+    },
+    {
+      title: "Users",
+      url: "/users",  // Changed from "#"
       icon: IconUsers,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",  // Changed from "#"
       icon: IconSettings,
     },
     {
       title: "Get Help",
-      url: "#",
+      url: "/help",  // Changed from "#"
       icon: IconHelp,
     },
     {
       title: "Search",
-      url: "#",
+      url: "#",  // Keep as # for search modal
       icon: IconSearch,
     },
   ],
   documents: [
     {
       name: "Data Library",
-      url: "#",
+      url: "/data-library",  // Changed from "#"
       icon: IconDatabase,
     },
     {
       name: "Reports",
-      url: "#",
+      url: "/reports",  // Changed from "#"
       icon: IconReport,
     },
     {
       name: "Word Assistant",
-      url: "#",
+      url: "/word-assistant",  // Changed from "#"
       icon: IconFileWord,
     },
   ],
@@ -160,9 +105,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <a href="/insights">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">Kroeva Inc.</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
