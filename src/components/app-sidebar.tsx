@@ -26,26 +26,23 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarRail,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "kroeva",
-    email: "kroeva@example.com",
-    avatar: "/avatars/kroeva.jpg",
-  },
   navMain: [
     {
       title: "Insights",
       url: "/insights",  // Changed from "#"
       icon: IconChartBar,
+      isActive: true,
     },
     {
-      title: "Applications",
-      url: "/applications",  // Changed from "#"
+      title: "Subscriptions",
+      url: "/subscriptions",  // Changed from "#"
       icon: IconListDetails,
     },
     {
@@ -103,11 +100,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="/insights">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Kroeva Inc.</span>
+                <IconInnerShadowTop className="size-5!" />
+                <span className="text-base font-semibold">Kroeva</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -119,8 +116,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   )
 }

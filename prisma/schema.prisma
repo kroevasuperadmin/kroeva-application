@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -8,60 +7,137 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String         @id @default(cuid())
-  clerkId       String         @unique
-  email         String         @unique
-  firstName     String?
-  lastName      String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  
-  subscriptions Subscription[]
+//-----------------CORE ENTITIES-----------------//
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  users         User[]
   integrations  Integration[]
+  subscriptions Subscription[]
 }
 
+model User {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique
+  email       String   @unique
+  name        String?
+  workspaceId String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+//-----------------SAAS CATALOG (GLOBAL)-----------------//
+
+model SaasApplication {
+  id       String  @id @default(cuid())
+  name     String  @unique
+  vendor   String?
+  category String?
+  logoUrl  String?
+  website  String?
+
+  // MVP: static cancellation guidance
+  cancellationGuide String? @db.Text
+  cancellationUrl   String?
+
+  subscriptions Subscription[]
+
+  createdAt DateTime @default(now())
+}
+
+//-----------------SUBSCRIPTIONS-----------------//
+
 model Subscription {
-  id              String    @id @default(cuid())
-  userId          String
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  serviceName     String
-  planName        String?
-  amount          Float
-  currency        String    @default("USD")
-  billingCycle    String
-  nextBillingDate DateTime?
-  status          String    @default("active")
-  
-  detectedFrom    String
-  lastUsed        DateTime?
-  rawEmailId      String?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  @@index([userId])
+  id          String   @id @default(cuid())
+  workspaceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  saasApplicationId String?
+  saasApplication   SaasApplication? @relation(fields: [saasApplicationId], references: [id])
+
+  // Display & cost
+  displayName  String
+  amount       Decimal      @db.Decimal(10, 2)
+  currency     String       @default("MYR")
+  billingCycle BillingCycle @default(MONTHLY)
+  category     String?
+
+  // Status & optimization
+  status   SubscriptionStatus @default(ACTIVE)
+  isUnused Boolean            @default(false)
+
+  // Detection metadata (ADDED)
+  detectedVia    DetectionMethod @default(MANUAL)
+  lastDetectedAt DateTime        @default(now())
+  confidence     Int? // 0-100 score from scanner
+  sourceEmail    String? // Email address it was detected from
+
+  // User confirmation (ADDED)
+  isConfirmed Boolean @default(false)
+
+  // Unique constraint: one subscription per service per workspace
+  @@unique([workspaceId, displayName])
+  @@index([workspaceId])
   @@index([status])
 }
 
+//-----------------INTEGRATIONS-----------------//
+
 model Integration {
-  id           String    @id @default(cuid())
-  userId       String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  type         String
-  email        String
-  accessToken  String    @db.Text
-  refreshToken String?   @db.Text
-  expiresAt    DateTime?
-  
-  isActive     Boolean   @default(true)
-  lastSynced   DateTime?
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  
-  @@unique([userId, type])
-  @@index([userId])
+  id          String   @id @default(cuid())
+  workspaceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  type   IntegrationType
+  status IntegrationStatus @default(CONNECTED)
+
+  // OAuth tokens
+  accessToken          String    @db.Text
+  refreshToken         String?   @db.Text
+  accessTokenExpiresAt DateTime?
+
+  lastSyncAt DateTime?
+  nextSyncAt DateTime?
+
+  @@unique([workspaceId, type])
+}
+
+//-----------------ENUMS-----------------//
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+  ONE_TIME
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  UNKNOWN
+  PENDING // For unconfirmed detections
+}
+
+enum DetectionMethod {
+  GMAIL
+  MANUAL
+}
+
+enum IntegrationType {
+  GMAIL
+}
+
+enum IntegrationStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
 }

@@ -10,7 +10,6 @@ export async function POST(req: Request) {
     throw new Error('Add CLERK_WEBHOOK_SECRET to .env')
   }
 
-  // Get headers
   const headerPayload = await headers()
   const svix_id = headerPayload.get('svix-id')
   const svix_timestamp = headerPayload.get('svix-timestamp')
@@ -41,26 +40,35 @@ export async function POST(req: Request) {
 
   if (eventType === 'user.created') {
     const { id, email_addresses, first_name, last_name } = evt.data
+    const email = email_addresses[0].email_address
+    const name = [first_name, last_name].filter(Boolean).join(' ') || null
 
-    await prisma.user.create({
+    // Create Workspace + User together
+    await prisma.workspace.create({
       data: {
-        clerkId: id,
-        email: email_addresses[0].email_address,
-        firstName: first_name || null,
-        lastName: last_name || null,
+        name: `${first_name || 'My'}'s Workspace`,
+        users: {
+          create: {
+            clerkId: id,
+            email: email,
+            name: name,
+          },
+        },
       },
     })
+
+    console.log(`Created workspace and user for: ${email}`)
   }
 
   if (eventType === 'user.updated') {
     const { id, email_addresses, first_name, last_name } = evt.data
+    const name = [first_name, last_name].filter(Boolean).join(' ') || null
 
     await prisma.user.update({
       where: { clerkId: id },
       data: {
         email: email_addresses[0].email_address,
-        firstName: first_name || null,
-        lastName: last_name || null,
+        name: name,
       },
     })
   }
@@ -68,9 +76,18 @@ export async function POST(req: Request) {
   if (eventType === 'user.deleted') {
     const { id } = evt.data
     if (id) {
-      await prisma.user.delete({
+      // Find user and their workspace
+      const user = await prisma.user.findUnique({
         where: { clerkId: id },
+        select: { workspaceId: true },
       })
+
+      if (user) {
+        // Delete workspace (cascades to user)
+        await prisma.workspace.delete({
+          where: { id: user.workspaceId },
+        })
+      }
     }
   }
 
